@@ -1,0 +1,12 @@
+pandas
+aiohttp
+understat
+soccerdata
+numpy
+requests
+matplotlib
+seaborn
+scikit-learn
+joblib
+xgboost
+lightgbm
