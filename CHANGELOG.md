@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## [0.1.2] - 2025-12-26
+- Script `feature_engineering.py` actualizado para generar solo features útiles:
+	- Añadidas features de estado de forma contextual: `home_*_last5_homeonly` y `away_*_last5_awayonly`.
+	- Eliminadas columnas cruzadas no informativas del partido actual (p. ej., `home_gf_away`, `away_gf_home`).
+	- Mantenidas las acumuladas por temporada útiles (`*_home_season_todate`, `*_away_season_todate`).
+- Sincronización de salidas: `engineered_football_data.csv` (full) y `engineered_football_data_lite.csv` (lite) ahora tienen el mismo nº de filas (una por partido).
+- Notebook de preparación: creación de datasets para EDA/modelado en `data/processed`:
+	- Full imputed (odds por mediana Competition+Season, H2H=0) y full filtered (sin nulos en odds).
+	- Lite imputed y lite filtered con el mismo criterio.
+- Decisión operativa actual: dejar la imputación avanzada y EDA para el siguiente paso, y revisar fiabilidad de datos y columnas duplicadas antes de modelizar.
+
 ## [0.1.1] - 2025-12-26
 - Notebook de limpieza: análisis detallado de partidos con `FTR` no informado y grupos con resultados no informados.
 - Eliminación de grupos con >10% de partidos no informados (FTHG/FTAG/FTR) y reporte por `Division`, `Competition` y `Season`.
