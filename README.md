@@ -1,4 +1,4 @@
-# Predicción de Empates en Fútbol (v0.1.2)
+# Predicción de Empates en Fútbol (v0.1.3)
 
 Este proyecto tiene como objetivo predecir empates en partidos de fútbol europeo utilizando datos históricos, features ingenieriles y modelos de machine learning. El enfoque es maximizar aciertos en predicciones semanales de empates, con un recall aceptable (al menos 10 empates por cada 100 partidos) y con una precisión superior al 0.36.
 
@@ -69,24 +69,30 @@ Esto evita errores de FileNotFoundError al cargar archivos como `data/processed/
    - Reset por temporada; las features se calculan pre-partido (sin fuga de información).
    - Resultados sincronizados en `data/intermediate/engineered_football_data.csv` (full) y `data/intermediate/engineered_football_data_lite.csv` (lite) con el mismo nº de filas.
 
-5. **Limpieza de Datos**:
-   - Ejecuta `src/data/data_cleaning.py` para filtrar y limpiar.
-   - Elimina partidos de principios de temporada (NaN en features clave, ~21k filas eliminadas).
-   - Imputa NaN: mediana por liga para forma, xG, posiciones, goal diff; 0 para H2H; mediana para odds.
-   - Resultado: `data/intermediate/football_data_cleaned.csv` (229,311 filas, 47 columnas, distribución: 45% H, 28% A, 27% D).
+5. **Limpieza de Engineered (v0.1.3)**:
+    - Ejecuta el notebook [src/notebooks/clean_engineered_football_data.ipynb](src/notebooks/clean_engineered_football_data.ipynb).
+    - Imputación y normalización:
+       - `HTR <- FTR` cuando falte.
+       - H2H y estado de forma (`*_last5`, `*_ma_5`, `*_median_5`, `*_std_5`, `draw_tendency_*`, `form_diff_*`, `*_last_*`) a 0.
+       - Descanso: `home_rest_days`, `away_rest_days`, `rest_days_diff` a 0; recalcular `rest_days_diff` si aplica.
+       - PPG season-to-date con divisiones seguras y diferenciales (`ppg_diff_season_td`, `ppg_homeaway_ctx_diff_season_td`).
+       - Acumulados y `matches_played*` a 0.
+       - Cuotas: imputación por mediana `Competition+Season` con fallback a mediana global; probabilidades normalizadas y métricas derivadas.
+       - NaN numéricos residuales a 0.
+    - Salidas (con timestamp) en `data/intermediate`:
+       - `engineered_football_data_cleaned_all_<timestamp>.csv`
+       - `engineered_football_data_cleaned_no_odds_nulls_<timestamp>.csv`
+    - Opcional: sincroniza a `data/processed` copiando los últimos CSV con timestamp para que sean idénticos.
 
 6. **Validación de Datos**:
    - Verificar fiabilidad: revisar columnas duplicadas y coherencia de features (estado de forma y acumulados).
    - Próximo paso: imputación de nulos (H2H=0, odds por mediana Competition+Season) y EDA antes de modelizar.
 
-7. **Datasets procesados para EDA/Modelado (v0.1.2)**:
-    - Full (desde `engineered_football_data.csv`):
-       - `data/processed/engineered_football_data_imputed.csv` (H2H=0; `ODDS_*` imputadas por mediana Competition+Season; `prob_*` y señales `odds_*` recalculadas).
-       - `data/processed/engineered_football_data_filtered.csv` (filtrado: filas con `ODDS_*` no nulas; derivadas recalculadas).
-    - Lite (desde `engineered_football_data_lite.csv`):
-       - `data/processed/engineered_football_data_lite_imputed.csv`.
-       - `data/processed/engineered_football_data_lite_filtered.csv`.
-    - Usa “filtered” para modelos que dependan de cuotas; “imputed” para cobertura completa.
+7. **Datasets procesados para EDA/Modelado (v0.1.3)**:
+    - Copias de los últimos CSV con timestamp de `intermediate` hacia `processed` para garantizar igualdad exacta:
+       - `data/processed/engineered_football_data_cleaned_all.csv`
+       - `data/processed/engineered_football_data_cleaned_no_odds_nulls.csv`
+    - Recomendado: ejecutar las últimas celdas del notebook de limpieza para sincronizar y verificar igualdad (hash SHA256 y conteo de filas).
 
 8. **EDA (Análisis Exploratorio)**:
    - Usa `notebooks/eda_football_data.ipynb` para explorar distribuciones, correlaciones y outliers del dataset `data/processed/football_data_cleaned.csv`.
@@ -114,9 +120,9 @@ seguiremos con más pasos... mejora de modelos, evaluación de resultados etc..
 2. Instala dependencias: `pip install -r requirements.txt`.
 3. Genera features:
    - `python src/data/feature_engineering.py -i data/intermediate/unified_cleaned_football_data.csv -o data/intermediate/engineered_football_data.csv -ol data/intermediate/engineered_football_data_lite.csv -w 5`
-4. Prepara datasets para EDA/modelado (opcional, vía notebook o script):
-   - Imputa H2H=0 y odds por mediana; guarda en `data/processed`.
-   - Filtra registros con odds completas; guarda en `data/processed`.
+4. Limpia engineered y sincroniza procesados (vía notebook):
+   - Ejecuta [src/notebooks/clean_engineered_football_data.ipynb](src/notebooks/clean_engineered_football_data.ipynb) y genera CSVs con timestamp en `data/intermediate`.
+   - Sincroniza a `data/processed` copiando los últimos CSV de `intermediate` para asegurar igualdad exacta.
 
 ## Notas Técnicas
 

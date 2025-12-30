@@ -1,5 +1,23 @@
 # CHANGELOG
 
+## [0.1.3] - 2025-12-30
+- Finalización del notebook de limpieza de engineered: [src/notebooks/clean_engineered_football_data.ipynb](src/notebooks/clean_engineered_football_data.ipynb).
+- Imputaciones y normalizaciones aplicadas:
+	- `HTR <- FTR` para nulos.
+	- H2H y estado de forma (`*_last5`, `*_ma_5`, `*_median_5`, `*_std_5`, `draw_tendency_*`, `form_diff_*`, `*_last_*`) rellenados con 0.
+	- Descanso: `home_rest_days`, `away_rest_days`, `rest_days_diff` a 0; `rest_days_diff` recalculado si aplica.
+	- PPG season-to-date y diferenciales recalculados con divisiones seguras.
+	- Acumulados y `matches_played*` rellenados con 0.
+	- Cuotas: imputación por mediana `Competition+Season` con fallback global; probabilidades normalizadas y métricas derivadas.
+	- NaN numéricos residuales a 0.
+- Exportaciones con timestamp en `data/intermediate`:
+	- `engineered_football_data_cleaned_all_<timestamp>.csv`
+	- `engineered_football_data_cleaned_no_odds_nulls_<timestamp>.csv`
+- Sincronización a `data/processed` copiando estos CSV para garantizar igualdad exacta:
+	- `engineered_football_data_cleaned_all.csv`
+	- `engineered_football_data_cleaned_no_odds_nulls.csv`
+- Verificación: igualdad por hash SHA256 y conteo de filas entre `intermediate` y `processed`.
+
 ## [0.1.2] - 2025-12-26
 - Script `feature_engineering.py` actualizado para generar solo features útiles:
 	- Añadidas features de estado de forma contextual: `home_*_last5_homeonly` y `away_*_last5_awayonly`.
