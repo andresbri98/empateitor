@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## [0.2.0] - 2026-01-03
+- Nuevo notebook de EDA: [src/notebooks/eda_enginereed_football_data.ipynb](src/notebooks/eda_enginereed_football_data.ipynb).
+	- Carga robusta del CSV final limpio desde `data/processed`.
+	- Verificación de ausencia de nulos.
+	- Análisis de la variable objetivo (`FTR`): distribución H/D/A.
+	- Análisis de empates por división (`Div`) y por competición (`Competition`).
+	- Evolución temporal del ratio de empates por `Season` y por `Competition`.
+	- Correlaciones con la variable objetivo usando solo features prepartido (excluyendo variables postpartido como `home_goals_total_match` y `away_goals_total_match`).
+	- Se añadió una sección final de interpretación centrada en señales prepartido (odds y equilibrio de fuerzas).
+
 ## [0.1.4] - 2026-01-03
 - Pipeline final actualizado en [src/data/process_football_data_final.py](src/data/process_football_data_final.py):
 	- Prioriza limpiar directamente desde el engineered intermedio si existe: [data/intermediate/engineered_football_data.csv](data/intermediate/engineered_football_data.csv).
