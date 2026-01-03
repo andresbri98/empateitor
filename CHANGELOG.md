@@ -1,5 +1,14 @@
 # CHANGELOG
 
+## [0.1.4] - 2026-01-03
+- Pipeline final actualizado en [src/data/process_football_data_final.py](src/data/process_football_data_final.py):
+	- Prioriza limpiar directamente desde el engineered intermedio si existe: [data/intermediate/engineered_football_data.csv](data/intermediate/engineered_football_data.csv).
+	- Fallback: si no existe el engineered, usa [data/intermediate/unified_cleaned_football_data.csv](data/intermediate/unified_cleaned_football_data.csv) y realiza el feature engineering en memoria antes de la limpieza final.
+- Salidas generadas en `data/processed` (idénticas a las de `intermediate`):
+	- [data/processed/engineered_footbal_data_cleaned_all.csv](data/processed/engineered_footbal_data_cleaned_all.csv)
+	- [data/processed/engineered_football_data_cleaned_no_odds_nulls.csv](data/processed/engineered_football_data_cleaned_no_odds_nulls.csv)
+- Verificación: igualdad exacta con los CSV con timestamp en `data/intermediate` (mismo nº de filas/columnas y contenido coincidente).
+
 ## [0.1.3] - 2025-12-30
 - Finalización del notebook de limpieza de engineered: [src/notebooks/clean_engineered_football_data.ipynb](src/notebooks/clean_engineered_football_data.ipynb).
 - Imputaciones y normalizaciones aplicadas:

@@ -1,4 +1,4 @@
-# Predicción de Empates en Fútbol (v0.1.3)
+# Predicción de Empates en Fútbol (v0.1.4)
 
 Este proyecto tiene como objetivo predecir empates en partidos de fútbol europeo utilizando datos históricos, features ingenieriles y modelos de machine learning. El enfoque es maximizar aciertos en predicciones semanales de empates, con un recall aceptable (al menos 10 empates por cada 100 partidos) y con una precisión superior al 0.36.
 
@@ -82,25 +82,38 @@ Esto evita errores de FileNotFoundError al cargar archivos como `data/processed/
     - Salidas (con timestamp) en `data/intermediate`:
        - `engineered_football_data_cleaned_all_<timestamp>.csv`
        - `engineered_football_data_cleaned_no_odds_nulls_<timestamp>.csv`
-    - Opcional: sincroniza a `data/processed` copiando los últimos CSV con timestamp para que sean idénticos.
+      - Opcional: sincroniza a `data/processed` copiando los últimos CSV con timestamp para que sean idénticos.
 
-6. **Validación de Datos**:
+6. **Pipeline Final Consolidado (v0.1.4)**:
+    - Ejecuta el script final para generar directamente los datasets procesados en `data/processed`:
+       - Preferencia: si existe `data/intermediate/engineered_football_data.csv`, se usará para la limpieza final.
+       - Alternativa: si no existe engineered, se leerá `data/intermediate/unified_cleaned_football_data.csv`, se calcularán las features en memoria y se aplicará la misma limpieza final.
+    - Resultados (idénticos a los intermedios más recientes):
+       - `data/processed/engineered_footbal_data_cleaned_all.csv`
+       - `data/processed/engineered_football_data_cleaned_no_odds_nulls.csv`
+    - Comando sugerido:
+     
+       ```bash
+       python -m src.data.process_football_data_final
+       ```
+
+7. **Validación de Datos**:
    - Verificar fiabilidad: revisar columnas duplicadas y coherencia de features (estado de forma y acumulados).
    - Próximo paso: imputación de nulos (H2H=0, odds por mediana Competition+Season) y EDA antes de modelizar.
 
-7. **Datasets procesados para EDA/Modelado (v0.1.3)**:
+8. **Datasets procesados para EDA/Modelado (v0.1.3)**:
     - Copias de los últimos CSV con timestamp de `intermediate` hacia `processed` para garantizar igualdad exacta:
        - `data/processed/engineered_football_data_cleaned_all.csv`
        - `data/processed/engineered_football_data_cleaned_no_odds_nulls.csv`
     - Recomendado: ejecutar las últimas celdas del notebook de limpieza para sincronizar y verificar igualdad (hash SHA256 y conteo de filas).
 
-8. **EDA (Análisis Exploratorio)**:
+9. **EDA (Análisis Exploratorio)**:
    - Usa `notebooks/eda_football_data.ipynb` para explorar distribuciones, correlaciones y outliers del dataset `data/processed/football_data_cleaned.csv`.
    - Visualizaciones: Distribuciones de FTR, odds, correlaciones con empates, análisis por liga y temporada.
    - Insights: Features positivas para empates (e.g., Prob_D alta, H2H_Draws); ligas con más empates (e.g., Serie A); patrones temporales.
    - Identifica features predictoras de empates (e.g., Prob_D, H2H_Draws).
 
-9. **Modelado**:
+10. **Modelado**:
    - Entrena modelos (XGBoost, Random Forest) para clasificar H/D/A o binario D vs no-D.
    - Métricas: Precisión y recall para "D" (empates).
    - Objetivo: Predecir top 10-15 empates por semana con ~40% precisión.
@@ -118,11 +131,19 @@ seguiremos con más pasos... mejora de modelos, evaluación de resultados etc..
 
 1. Configura entorno: `python -m venv .venv; .venv\Scripts\activate`.
 2. Instala dependencias: `pip install -r requirements.txt`.
-3. Genera features:
+3. Genera features (opcional si usas el pipeline final v0.1.4):
    - `python src/data/feature_engineering.py -i data/intermediate/unified_cleaned_football_data.csv -o data/intermediate/engineered_football_data.csv -ol data/intermediate/engineered_football_data_lite.csv -w 5`
-4. Limpia engineered y sincroniza procesados (vía notebook):
+4. Limpia engineered y sincroniza procesados (vía notebook) o usa el pipeline final:
+   - Opción A (notebook):
    - Ejecuta [src/notebooks/clean_engineered_football_data.ipynb](src/notebooks/clean_engineered_football_data.ipynb) y genera CSVs con timestamp en `data/intermediate`.
    - Sincroniza a `data/processed` copiando los últimos CSV de `intermediate` para asegurar igualdad exacta.
+   - Opción B (script final v0.1.4):
+     
+     ```bash
+     python -m src.data.process_football_data_final
+     ```
+     
+     Genera directamente los dos CSV en `data/processed` y verifica igualdad con los intermedios.
 
 ## Notas Técnicas
 
